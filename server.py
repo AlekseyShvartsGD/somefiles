@@ -1,43 +1,33 @@
-from flask import Flask, request, jsonify
-import urllib.parse
+from flask import Flask, request, Response
 
 app = Flask(__name__)
 
 DATA = {
-    "numbers": [0, 1, 1, 0, 1, 1, 0, 0],
     "date": "2026-09-07",
-    "status": "active",
+    "numbers": "01101100",
 }
 
 
 @app.route("/")
 def index():
-    return jsonify({"message": "Roblox Build Logic Server", "endpoints": ["/Return_Date", "/Return_Numbers", "/Post_Data"]})
+    return Response("Roblox Build Logic Server\nEndpoints: /Return_Date, /Return_Numbers", content_type="text/plain")
 
 
 @app.route("/Return_Date", methods=["GET", "POST"])
 def return_date():
-    if request.method == "POST":
-        received = urllib.parse.unquote(request.data.decode())
-        return jsonify({"received": received, "date": DATA["date"]})
-    return jsonify({"date": DATA["date"]})
+    return Response(DATA["date"], content_type="text/plain")
 
 
 @app.route("/Return_Numbers", methods=["GET", "POST"])
 def return_numbers():
-    if request.method == "POST":
-        received = urllib.parse.unquote(request.data.decode())
-        return jsonify({"received": received, "numbers": DATA["numbers"]})
-    return jsonify({"numbers": DATA["numbers"]})
+    return Response(DATA["numbers"], content_type="text/plain")
 
 
 @app.route("/Post_Data", methods=["GET", "POST"])
 def post_data():
     if request.method == "POST":
-        received = urllib.parse.unquote(request.data.decode())
-        parsed = dict(urllib.parse.parse_qsl(received))
-        return jsonify({"received": parsed, "response": "Data received"})
-    return jsonify({"status": "ready"})
+        return Response("Received: " + request.data.decode(), content_type="text/plain")
+    return Response("Ready", content_type="text/plain")
 
 
 if __name__ == "__main__":
